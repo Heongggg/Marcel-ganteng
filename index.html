@@ -4,6 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Happy Birthday Marcel 🐾</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🐾</text></svg>">
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
   <style>
 :root {
@@ -470,6 +471,52 @@ html, body {
 .carousel-btn.prev { left: -16px; }
 .carousel-btn.next { right: -16px; }
 
+/* AUTO-SLIDE PROGRESS BAR */
+.carousel-progress {
+  height: 3px;
+  background: rgba(255,255,255,0.1);
+  border-radius: 2px;
+  margin-top: 12px;
+  overflow: hidden;
+}
+.carousel-progress-bar {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, var(--dusty-pink), var(--violet-light));
+  border-radius: 2px;
+  transition: width linear;
+}
+
+/* SWIPE HINT */
+.swipe-hint {
+  position: absolute;
+  bottom: 16px; left: 50%;
+  transform: translateX(-50%);
+  display: flex; align-items: center; gap: 6px;
+  background: rgba(0,0,0,0.45);
+  backdrop-filter: blur(6px);
+  border: 1px solid rgba(255,255,255,0.15);
+  border-radius: 50px;
+  padding: 7px 16px;
+  color: rgba(255,255,255,0.85);
+  font-size: 0.78rem;
+  letter-spacing: 0.5px;
+  pointer-events: none;
+  animation: hintFadeOut 0.5s ease 3.5s forwards;
+  z-index: 5;
+}
+.swipe-hint-arrow {
+  display: inline-block;
+  animation: hintSlide 1s ease-in-out infinite;
+}
+@keyframes hintSlide {
+  0%,100% { transform: translateX(0); }
+  50%      { transform: translateX(6px); }
+}
+@keyframes hintFadeOut {
+  to { opacity: 0; }
+}
+
 /* floating hearts */
 .floating-heart {
   position: fixed; pointer-events: none; font-size: 1.4rem;
@@ -599,7 +646,69 @@ html, body {
   100% { opacity: 0; transform: translate(var(--tx), var(--ty)) scale(1.1) rotate(var(--rot)); }
 }
 
-/* ===== NEXT BUTTON ===== */
+/* ===== CINEMATIC INTRO ===== */
+#introScreen {
+  position: fixed; inset: 0; z-index: 2000;
+  background: #0d0a14;
+  display: flex; align-items: center; justify-content: center;
+  flex-direction: column;
+}
+.intro-for {
+  font-family: 'DM Sans', sans-serif; font-weight: 300;
+  font-size: 0.85rem; letter-spacing: 4px; text-transform: uppercase;
+  color: rgba(232,180,192,0.5);
+  opacity: 0; animation: introFadeUp 0.8s ease 0.3s forwards;
+}
+.intro-name {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(3rem, 14vw, 5.5rem);
+  color: white; line-height: 1;
+  opacity: 0; animation: introFadeUp 1s ease 0.9s forwards;
+  position: relative;
+}
+.intro-name::after {
+  content: '';
+  position: absolute; bottom: -6px; left: 0; right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--dusty-pink), transparent);
+  transform: scaleX(0);
+  animation: introLine 0.7s ease 1.8s forwards;
+}
+@keyframes introLine {
+  to { transform: scaleX(1); }
+}
+.intro-year {
+  font-family: 'DM Sans', sans-serif; font-weight: 300;
+  font-size: 0.9rem; letter-spacing: 3px;
+  color: var(--violet-light);
+  opacity: 0; animation: introFadeUp 0.8s ease 1.5s forwards;
+  margin-top: 12px;
+}
+@keyframes introFadeUp {
+  from { opacity: 0; transform: translateY(18px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+#introScreen.fade-out {
+  animation: introExit 0.9s cubic-bezier(0.77,0,0.18,1) forwards;
+}
+@keyframes introExit {
+  0%   { opacity: 1; transform: scale(1); }
+  100% { opacity: 0; transform: scale(1.06); pointer-events: none; }
+}
+
+/* ===== SKIP TYPING BUTTON ===== */
+.skip-typing-btn {
+  position: fixed; bottom: 24px; right: 20px; z-index: 10;
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(232,180,192,0.3);
+  color: rgba(255,255,255,0.6);
+  padding: 8px 16px; border-radius: 50px;
+  font-family: 'DM Sans', sans-serif; font-size: 0.78rem;
+  cursor: pointer; backdrop-filter: blur(8px);
+  transition: all 0.3s; letter-spacing: 0.5px;
+}
+.skip-typing-btn:hover { background: rgba(232,180,192,0.15); color: white; }
+.skip-typing-btn.hidden { display: none; }
 .next-btn {
   background: linear-gradient(135deg, var(--dusty-pink), var(--violet));
   color: white; border: none;
@@ -613,6 +722,52 @@ html, body {
   box-shadow: 0 8px 28px rgba(139,107,177,0.5);
 }
 .next-btn.hidden { display: none; }
+
+/* ===== MUSIC CONTROL BUTTON ===== */
+#musicControl {
+  position: fixed; top: 16px; right: 16px; z-index: 100;
+  width: 38px; height: 38px; border-radius: 50%;
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(232,180,192,0.3);
+  color: white; font-size: 1rem;
+  display: none; align-items: center; justify-content: center;
+  cursor: pointer; backdrop-filter: blur(10px);
+  transition: all 0.3s;
+}
+#musicControl.visible { display: flex; }
+#musicControl:hover { background: rgba(232,180,192,0.2); transform: scale(1.1); }
+
+/* ===== PAGE 2 PARTICLES ===== */
+#page2Canvas {
+  position: absolute; inset: 0;
+  pointer-events: none; z-index: 0;
+}
+
+/* ===== PER-PAGE BUTTON STYLES ===== */
+/* Page 1 — confident, bold */
+#page1 .next-btn {
+  background: linear-gradient(135deg, var(--dusty-pink), var(--violet));
+  letter-spacing: 1px;
+}
+/* Page 2 — soft, warm */
+#page2 .next-btn {
+  background: transparent;
+  border: 1.5px solid rgba(232,180,192,0.5);
+  color: var(--dusty-pink);
+  box-shadow: none;
+  font-style: italic;
+}
+#page2 .next-btn:hover {
+  background: rgba(232,180,192,0.1);
+  box-shadow: 0 0 20px rgba(232,180,192,0.2);
+}
+/* Page 3 — intimate, letter-style */
+#page3 .next-btn {
+  background: linear-gradient(135deg, #3d2660, var(--violet));
+  border: 1px solid rgba(232,180,192,0.3);
+  font-family: 'Playfair Display', serif;
+  font-style: italic; letter-spacing: 0.5px;
+}
 
 @media (max-width: 500px) {
   .greeting-title { font-size: 2rem; }
@@ -633,11 +788,21 @@ html, body {
   <source src="./music/song.mp3" type="audio/mpeg">
 </audio>
 
+<!-- MUSIC CONTROL -->
+<button id="musicControl" onclick="toggleMusic()" title="musik">🎵</button>
+
 <!-- STAR CANVAS — di atas semua page -->
 <canvas id="starCanvas"></canvas>
 
+<!-- CINEMATIC INTRO -->
+<div id="introScreen">
+  <p class="intro-for">special for</p>
+  <h1 class="intro-name">Marcel</h1>
+  <p class="intro-year">Juni 2026</p>
+</div>
+
 <!-- POPUP MUSIK -->
-<div class="music-popup" id="musicPopup">
+<div class="music-popup" id="musicPopup" style="display:none;">
   <div class="popup-box">
     <div class="popup-cats">🐈‍⬛❤️🐱</div>
     <h2>Haii Marcel!</h2>
@@ -671,9 +836,9 @@ html, body {
       </div>
       <div class="date-label">tanggal spesial yang selalu aku inget 🐾</div>
     </div>
-    <div class="countdown-wrap">
-      <p class="countdown-label">menuju hari spesialmu</p>
-      <div class="countdown-boxes">
+    <div class="countdown-wrap" id="countdownWrap">
+      <p class="countdown-label" id="countdownLabel">menuju hari spesialmu</p>
+      <div class="countdown-boxes" id="countdownBoxes">
         <div class="countdown-box"><span id="cdDays">00</span><small>hari</small></div>
         <div class="countdown-sep">:</div>
         <div class="countdown-box"><span id="cdHours">00</span><small>jam</small></div>
@@ -682,6 +847,10 @@ html, body {
         <div class="countdown-sep">:</div>
         <div class="countdown-box"><span id="cdSecs">00</span><small>detik</small></div>
       </div>
+      <div id="birthdayMsg" style="display:none; text-align:center; padding: 16px 0;">
+        <div style="font-size:2.2rem; margin-bottom:10px;">🎂✨</div>
+        <p id="birthdayMsgText" style="font-family:'Playfair Display',serif; color:var(--dusty-pink); font-size:1.2rem; line-height:1.6;"></p>
+      </div>
     </div>
     <button class="next-btn" onclick="goToPage(2)">lanjuttt 🐾</button>
   </div>
@@ -689,6 +858,7 @@ html, body {
 
 <!-- PAGE 2 -->
 <section class="page hidden" id="page2">
+  <canvas id="page2Canvas"></canvas>
   <div class="page2-content">
     <div class="words-container" id="wordsContainer">
       <p class="word-line" data-delay="0">kamu tau ga Cel...</p>
@@ -738,6 +908,7 @@ html, body {
       <span class="typing-cursor" id="letterCursor"></span>
     </div>
     <button class="next-btn hidden" id="nextBtn3" onclick="goToPage(4)">lanjuttt 🐾</button>
+    <button class="skip-typing-btn" id="skipTypingBtn" onclick="skipTyping()">skip ⏭</button>
   </div>
 </section>
 
@@ -777,7 +948,11 @@ html, body {
         </div>
       </div>
       <button class="carousel-btn next" onclick="carouselNext()">&#8594;</button>
+      <div class="swipe-hint" id="swipeHint">
+        geser <span class="swipe-hint-arrow">👉</span>
+      </div>
     </div>
+    <div class="carousel-progress"><div class="carousel-progress-bar" id="progressBar"></div></div>
     <div class="carousel-counter" id="carouselCounter">1 / 5</div>
     <div class="carousel-dots" id="carouselDots"></div>
     <div class="final-message" id="finalMessage">
@@ -884,16 +1059,95 @@ Happy 20th Birthday, Cel. Go get your dream! God bless you ❤️`;
 })();
 
 
+// ===== MUSIC CONTROL =====
+let musicPlaying = false;
+function toggleMusic() {
+  const music = document.getElementById('bgMusic');
+  const btn   = document.getElementById('musicControl');
+  if (musicPlaying) {
+    music.pause();
+    btn.textContent = '🔇';
+    musicPlaying = false;
+  } else {
+    music.play().catch(() => {});
+    btn.textContent = '🎵';
+    musicPlaying = true;
+  }
+}
+
+// ===== PAGE 2 PARTICLES =====
+let p2AnimId;
+function initPage2Particles() {
+  const canvas = document.getElementById('page2Canvas');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  canvas.width  = window.innerWidth;
+  canvas.height = window.innerHeight;
+
+  const particles = Array.from({length: 55}, () => ({
+    x:     Math.random() * canvas.width,
+    y:     Math.random() * canvas.height,
+    r:     0.6 + Math.random() * 1.4,
+    vx:    (Math.random() - 0.5) * 0.3,
+    vy:    -0.2 - Math.random() * 0.4,
+    alpha: 0.1 + Math.random() * 0.5,
+    pulse: Math.random() * Math.PI * 2,
+  }));
+
+  cancelAnimationFrame(p2AnimId);
+  function draw() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    particles.forEach(p => {
+      p.pulse += 0.02;
+      p.x += p.vx; p.y += p.vy;
+      if (p.y < -5)               p.y = canvas.height + 5;
+      if (p.x < -5)               p.x = canvas.width + 5;
+      if (p.x > canvas.width + 5) p.x = -5;
+      const a = p.alpha * (0.5 + 0.5 * Math.abs(Math.sin(p.pulse)));
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(232,180,192,${a})`;
+      ctx.fill();
+    });
+    p2AnimId = requestAnimationFrame(draw);
+  }
+  draw();
+}
+
+
+(function runIntro() {
+  const intro  = document.getElementById('introScreen');
+  const popup  = document.getElementById('musicPopup');
+  // After animations finish (~2.4s), fade out intro then show popup
+  setTimeout(() => {
+    intro.classList.add('fade-out');
+    setTimeout(() => {
+      intro.style.display = 'none';
+      popup.style.display = 'flex';
+      popup.style.opacity = '0';
+      popup.style.transition = 'opacity 0.5s ease';
+      void popup.offsetWidth;
+      popup.style.opacity = '1';
+    }, 900);
+  }, 2400);
+})();
+
 // ===== MUSIC POPUP =====
 function startSite(playMusic) {
   const popup = document.getElementById('musicPopup');
   popup.style.opacity = '0';
   popup.style.transition = 'opacity 0.4s';
   setTimeout(() => popup.style.display = 'none', 400);
+  const btn = document.getElementById('musicControl');
+  btn.classList.add('visible');
   if (playMusic) {
     const music = document.getElementById('bgMusic');
     music.volume = 0.6;
     music.play().catch(() => {});
+    musicPlaying = true;
+    btn.textContent = '🎵';
+  } else {
+    btn.textContent = '🔇';
   }
   initPage1();
 }
@@ -957,15 +1211,34 @@ function animateDate() {
 
 // ===== COUNTDOWN =====
 function updateCountdown() {
-  const diff = BIRTHDAY_DATE - new Date();
-  if (diff <= 0) {
-    ['cdDays','cdHours','cdMins','cdSecs'].forEach(id => document.getElementById(id).textContent = '00');
-    return;
+  const now  = new Date();
+  const diff = BIRTHDAY_DATE - now;
+
+  if (diff > 0) {
+    // Before birthday — show countdown
+    document.getElementById('countdownBoxes').style.display = 'flex';
+    document.getElementById('birthdayMsg').style.display = 'none';
+    document.getElementById('countdownLabel').textContent = 'menuju hari spesialmu';
+    document.getElementById('cdDays').textContent  = String(Math.floor(diff / 86400000)).padStart(2,'0');
+    document.getElementById('cdHours').textContent = String(Math.floor((diff % 86400000) / 3600000)).padStart(2,'0');
+    document.getElementById('cdMins').textContent  = String(Math.floor((diff % 3600000) / 60000)).padStart(2,'0');
+    document.getElementById('cdSecs').textContent  = String(Math.floor((diff % 60000) / 1000)).padStart(2,'0');
+  } else {
+    // On or after birthday
+    document.getElementById('countdownBoxes').style.display = 'none';
+    document.getElementById('birthdayMsg').style.display = 'block';
+    document.getElementById('countdownLabel').textContent = '';
+
+    const daysPast = Math.floor(Math.abs(diff) / 86400000);
+    const msgEl = document.getElementById('birthdayMsgText');
+    if (daysPast === 0) {
+      msgEl.textContent = 'hari ini Marcel genap 20 tahun! 🎉';
+    } else if (daysPast === 1) {
+      msgEl.textContent = 'Marcel baru aja ulang tahun kemarin 🐾\nselamat ya, Cel!';
+    } else {
+      msgEl.textContent = `Marcel udah 20 tahun ${daysPast} hari yang lalu 🐾\nsemoga semua doanya terkabul!`;
+    }
   }
-  document.getElementById('cdDays').textContent  = String(Math.floor(diff / 86400000)).padStart(2,'0');
-  document.getElementById('cdHours').textContent = String(Math.floor((diff % 86400000) / 3600000)).padStart(2,'0');
-  document.getElementById('cdMins').textContent  = String(Math.floor((diff % 3600000) / 60000)).padStart(2,'0');
-  document.getElementById('cdSecs').textContent  = String(Math.floor((diff % 60000) / 1000)).padStart(2,'0');
 }
 
 
@@ -1028,6 +1301,7 @@ function goToPage(num) {
 
 // ===== PAGE 2 =====
 function initPage2() {
+  initPage2Particles();
   const lines = document.querySelectorAll('.word-line');
   lines.forEach(l => l.classList.remove('visible'));
   lines.forEach(l => {
@@ -1039,13 +1313,15 @@ function initPage2() {
 }
 
 
-// ===== PAGE 3: SURAT — kecepatan dikurangi jadi 40ms =====
+// ===== PAGE 3: SURAT =====
 let typingInterval;
 function initPage3() {
   const textEl  = document.getElementById('letterText');
   const cursor  = document.getElementById('letterCursor');
+  const skipBtn = document.getElementById('skipTypingBtn');
   textEl.textContent = '';
   cursor.style.display = 'inline-block';
+  skipBtn.classList.remove('hidden');
   let i = 0;
   clearInterval(typingInterval);
   typingInterval = setInterval(() => {
@@ -1055,9 +1331,24 @@ function initPage3() {
     } else {
       clearInterval(typingInterval);
       cursor.style.display = 'none';
+      skipBtn.classList.add('hidden');
       document.getElementById('nextBtn3').classList.remove('hidden');
     }
-  }, 40); // <-- diperlambat dari 22ms → 40ms
+  }, 40);
+}
+
+function skipTyping() {
+  clearInterval(typingInterval);
+  const textEl  = document.getElementById('letterText');
+  const cursor  = document.getElementById('letterCursor');
+  const skipBtn = document.getElementById('skipTypingBtn');
+  textEl.textContent = LETTER;
+  cursor.style.display = 'none';
+  skipBtn.classList.add('hidden');
+  document.getElementById('nextBtn3').classList.remove('hidden');
+  setTimeout(() => {
+    document.getElementById('page3').scrollTop = document.getElementById('page3').scrollHeight;
+  }, 100);
 }
 
 
@@ -1095,7 +1386,9 @@ function initPage4() {
     const dx = e.changedTouches[0].clientX - touchStartX;
     const dy = e.changedTouches[0].clientY - touchStartY;
     if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 40) {
+      stopAutoSlide();
       dx < 0 ? carouselNext() : carouselPrev();
+      startAutoSlide();
     }
     isDragging = false;
   }, { passive: true });
@@ -1104,12 +1397,62 @@ function initPage4() {
   wrap.addEventListener('mousedown', e => { mouseStartX = e.clientX; });
   wrap.addEventListener('mouseup',   e => {
     const dx = e.clientX - mouseStartX;
-    if (Math.abs(dx) > 40) dx < 0 ? carouselNext() : carouselPrev();
+    if (Math.abs(dx) > 40) {
+      stopAutoSlide();
+      dx < 0 ? carouselNext() : carouselPrev();
+      startAutoSlide();
+    }
   });
 
   setTimeout(() => launchConfetti(), 300);
-  setTimeout(() => revealEnding(), 1800);
   carouselGoTo(0, true);
+  startAutoSlide();
+}
+
+let autoSlideTimer = null;
+const AUTO_SLIDE_DELAY = 3000;
+
+function startAutoSlide() {
+  clearInterval(autoSlideTimer);
+  const bar = document.getElementById('progressBar');
+  if (!bar) return;
+  bar.style.transition = 'none';
+  bar.style.width = '0%';
+  void bar.offsetWidth;
+  bar.style.transition = `width ${AUTO_SLIDE_DELAY}ms linear`;
+  bar.style.width = '100%';
+
+  autoSlideTimer = setTimeout(() => {
+    if (carouselIndex < CAROUSEL_TOTAL - 1) {
+      carouselNext();
+      startAutoSlide();
+    } else {
+      // Last slide — stop progress bar, then trigger dramatic ending after pause
+      bar.style.transition = 'none';
+      bar.style.width = '0%';
+      triggerDramaticEnding();
+    }
+  }, AUTO_SLIDE_DELAY);
+}
+
+function triggerDramaticEnding() {
+  // Dim the carousel slightly
+  const wrap = document.getElementById('carouselWrap');
+  if (wrap) {
+    wrap.style.transition = 'opacity 1.2s ease';
+    wrap.style.opacity = '0.35';
+  }
+  // Wait 800ms then scroll + reveal
+  setTimeout(() => {
+    revealEnding();
+    launchConfetti();
+  }, 800);
+}
+
+function stopAutoSlide() {
+  clearTimeout(autoSlideTimer);
+  const bar = document.getElementById('progressBar');
+  if (bar) { bar.style.transition = 'none'; bar.style.width = '0%'; }
 }
 
 function carouselGoTo(index, isInit = false) {
